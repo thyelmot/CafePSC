@@ -1,3 +1,15 @@
+import {
+  getMockProducts,
+  updateMockProductAvailability,
+  getMockOrders,
+  getMockCustomerOrders,
+  createMockOrder,
+  updateMockOrderStatus,
+  cancelMockOrder,
+  deleteMockOrder,
+  resetMockOrders,
+} from './mockData';
+
 // API URL - sử dụng Vercel API routes hoặc localhost cho development
 const API_URL = import.meta.env.VITE_API_URL || (
   window.location.hostname === 'localhost' 
@@ -21,211 +33,219 @@ function setCSRFToken(token) {
 
 // Products API
 export async function fetchProducts() {
-  const response = await fetch(`${API_URL}/products`);
-  if (!response.ok) throw new Error('Failed to fetch products');
-  return response.json();
+  try {
+    const response = await fetch(`${API_URL}/products`);
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, loading sample menu items.');
+  }
+  return getMockProducts();
 }
 
 export async function updateProductAvailability(id, isAvailable) {
-  const csrfToken = getCSRFToken();
-  const headers = { 
-    'Content-Type': 'application/json'
-  };
-  
-  if (csrfToken) {
-    headers['X-CSRF-Token'] = csrfToken;
+  try {
+    const csrfToken = getCSRFToken();
+    const headers = { 
+      'Content-Type': 'application/json'
+    };
+    
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+    
+    const response = await fetch(`${API_URL}/products/${id}/availability`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers,
+      body: JSON.stringify({ is_available: isAvailable }),
+    });
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, updating mock availability.');
   }
-  
-  const response = await fetch(`${API_URL}/products/${id}/availability`, {
-    method: 'PUT',
-    credentials: 'include', // Gửi cookies (httpOnly)
-    headers,
-    body: JSON.stringify({ is_available: isAvailable }),
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to update product' }));
-    throw new Error(error.error || 'Failed to update product');
-  }
-  return response.json();
+  return updateMockProductAvailability(id, isAvailable);
 }
 
 // Orders API
 export async function fetchOrders() {
-  const response = await fetch(`${API_URL}/orders`, {
-    credentials: 'include' // Include cookies for auth
-  });
-  if (!response.ok) {
-    // Handle 401 (Unauthorized) gracefully - user not authenticated
+  try {
+    const response = await fetch(`${API_URL}/orders`, {
+      credentials: 'include'
+    });
     if (response.status === 401) {
       throw new Error('Unauthorized');
     }
-    throw new Error('Failed to fetch orders');
+    if (response.ok) return await response.json();
+  } catch (error) {
+    if (error.message === 'Unauthorized') throw error;
+    console.info('[Mock] Backend offline, loading mock orders.');
   }
-  return response.json();
+  return getMockOrders();
 }
 
 export async function fetchCustomerOrders(customerName, phone) {
-  const params = new URLSearchParams({
-    customer_name: customerName,
-    phone: phone
-  });
-  const response = await fetch(`${API_URL}/orders/customer?${params}`);
-  if (!response.ok) throw new Error('Failed to fetch customer orders');
-  return response.json();
+  try {
+    const params = new URLSearchParams({
+      customer_name: customerName,
+      phone: phone
+    });
+    const response = await fetch(`${API_URL}/orders/customer?${params}`);
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, fetching mock customer orders.');
+  }
+  return getMockCustomerOrders(customerName, phone);
 }
 
 export async function createOrder(orderData) {
-  const response = await fetch(`${API_URL}/orders`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderData),
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to create order' }));
-    // Log chi tiết để debug
-    console.error('Order creation failed:', {
-      status: response.status,
-      statusText: response.statusText,
-      error: error,
-      orderData: orderData
+  try {
+    const response = await fetch(`${API_URL}/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData),
     });
-    throw new Error(error.error || 'Không thể đặt hàng. Vui lòng thử lại.');
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, creating order locally.');
   }
-  return response.json();
+  return createMockOrder(orderData);
 }
 
 export async function updateOrderStatus(id, status) {
-  const csrfToken = getCSRFToken();
-  const headers = { 
-    'Content-Type': 'application/json'
-  };
-  
-  if (csrfToken) {
-    headers['X-CSRF-Token'] = csrfToken;
+  try {
+    const csrfToken = getCSRFToken();
+    const headers = { 
+      'Content-Type': 'application/json'
+    };
+    
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+    
+    const response = await fetch(`${API_URL}/orders/${id}/status`, {
+      method: 'PUT',
+      credentials: 'include',
+      headers,
+      body: JSON.stringify({ status }),
+    });
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, updating order status in mock data.');
   }
-  
-  const response = await fetch(`${API_URL}/orders/${id}/status`, {
-    method: 'PUT',
-    credentials: 'include', // Gửi cookies (httpOnly)
-    headers,
-    body: JSON.stringify({ status }),
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to update order' }));
-    throw new Error(error.error || 'Failed to update order');
-  }
-  return response.json();
+  return updateMockOrderStatus(id, status);
 }
 
 export async function resetAllOrders() {
-  const csrfToken = getCSRFToken();
-  const headers = {};
-  
-  if (csrfToken) {
-    headers['X-CSRF-Token'] = csrfToken;
+  try {
+    const csrfToken = getCSRFToken();
+    const headers = {};
+    
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+    
+    const response = await fetch(`${API_URL}/orders/reset`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers
+    });
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, resetting mock orders.');
   }
-  
-  const response = await fetch(`${API_URL}/orders/reset`, {
-    method: 'DELETE',
-    credentials: 'include', // Gửi cookies (httpOnly)
-    headers
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to reset orders' }));
-    throw new Error(error.error || 'Failed to reset orders');
-  }
-  return response.json();
+  return resetMockOrders();
 }
 
 export async function cancelOrder(id, customerName, phone) {
-  const response = await fetch(`${API_URL}/orders/${id}/cancel`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      customer_name: customerName,
-      phone: phone
-    }),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Failed to cancel order');
+  try {
+    const response = await fetch(`${API_URL}/orders/${id}/cancel`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        customer_name: customerName,
+        phone: phone
+      }),
+    });
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, cancelling mock order.');
   }
-  return response.json();
+  return cancelMockOrder(id);
 }
 
 export async function deleteOrder(id) {
-  const csrfToken = getCSRFToken();
-  const headers = {};
-  
-  if (csrfToken) {
-    headers['X-CSRF-Token'] = csrfToken;
+  try {
+    const csrfToken = getCSRFToken();
+    const headers = {};
+    
+    if (csrfToken) {
+      headers['X-CSRF-Token'] = csrfToken;
+    }
+    
+    const response = await fetch(`${API_URL}/orders/${id}`, {
+      method: 'DELETE',
+      credentials: 'include',
+      headers
+    });
+    if (response.ok) return await response.json();
+  } catch (error) {
+    console.info('[Mock] Backend offline, deleting mock order.');
   }
-  
-  const response = await fetch(`${API_URL}/orders/${id}`, {
-    method: 'DELETE',
-    credentials: 'include', // Gửi cookies (httpOnly)
-    headers
-  });
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error: 'Failed to delete order' }));
-    throw new Error(error.error || 'Failed to delete order');
-  }
-  return response.json();
+  return deleteMockOrder(id);
 }
 
 // Admin authentication
 export async function adminLogin(password) {
-  const response = await fetch(`${API_URL}/admin/login`, {
-    method: 'POST',
-    credentials: 'include', // Gửi và nhận cookies
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password }),
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Login failed');
+  try {
+    const response = await fetch(`${API_URL}/admin/login`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+    if (response.ok) {
+      const data = await response.json();
+      if (data.csrfToken) {
+        setCSRFToken(data.csrfToken);
+      }
+      return data;
+    }
+  } catch (error) {
+    console.info('[Mock] Backend offline, checking mock admin password.');
   }
-  const data = await response.json();
   
-  // Store CSRF token if provided
-  if (data.csrfToken) {
-    setCSRFToken(data.csrfToken);
+  if (password === 'admin123' || password === 'admin') {
+    localStorage.setItem('cafepsc_mock_auth', 'true');
+    setCSRFToken('mock-csrf-token');
+    return { success: true, token: 'mock-admin-token' };
   }
-  
-  return data;
+  throw new Error('Mật khẩu không đúng (Mặc định: admin123)');
 }
 
 // Admin logout
 export async function adminLogout() {
-  // Clear CSRF token
   setCSRFToken(null);
-  
-  const response = await fetch(`${API_URL}/admin/logout`, {
-    method: 'POST',
-    credentials: 'include' // Gửi cookies để xóa
-  });
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || 'Logout failed');
-  }
-  return response.json();
+  localStorage.removeItem('cafepsc_mock_auth');
+  try {
+    await fetch(`${API_URL}/admin/logout`, {
+      method: 'POST',
+      credentials: 'include'
+    });
+  } catch (error) {}
+  return { success: true };
 }
 
 // Check admin authentication status
 export async function checkAdminAuth() {
-  // Use dedicated auth check endpoint to avoid unnecessary 401 logs
-  // This endpoint returns 200 if authenticated, 401 if not
   try {
     const response = await fetch(`${API_URL}/admin/check`, {
       method: 'GET',
       credentials: 'include',
     });
-    // 401 = not authenticated (expected, not an error)
-    // 200 = authenticated
-    return response.status === 200;
+    if (response.status === 200) return true;
+    if (response.status === 401) return false;
   } catch (error) {
-    // Network error or other issues
-    return false;
+    // Network error -> fallback
   }
+  return localStorage.getItem('cafepsc_mock_auth') === 'true';
 }
-

@@ -2,11 +2,12 @@
 
 A modern, real-time coffee ordering web application built for students. Features instant order updates, beautiful UI, and seamless order management.
 
-![CaféPSC](https://img.shields.io/badge/Made%20with-React%20%2B%20Node.js-blue)
+![CaféPSC](<https://img.shields.io/badge/Made%20with-React%20%2B%20Node.js-blue>)
 
 ## ✨ Features
 
 ### For Customers
+
 - 📋 Browse real-time menu with availability status
 - 🎨 Customize drinks (size, sugar, ice, toppings)
 - 🛒 Add to cart and place orders easily
@@ -15,6 +16,7 @@ A modern, real-time coffee ordering web application built for students. Features
 - 📍 See queue position in real-time
 
 ### For Admin
+
 - 🔐 Password-protected admin access
 - 📱 Real-time order dashboard
 - 🔔 Instant notification on new orders (with sound)
@@ -76,12 +78,14 @@ npm install
 ### 4. Run the Application
 
 **Terminal 1 - Backend:**
+
 ```bash
 cd backend
 npm run dev
 ```
 
 **Terminal 2 - Frontend:**
+
 ```bash
 cd frontend
 npm run dev
@@ -119,60 +123,67 @@ CafePSC/
 ## 🗄️ Database Schema
 
 ### products
-| Column | Type | Description |
-|--------|------|-------------|
-| id | SERIAL | Primary key |
-| name | VARCHAR | Product name |
-| price | DECIMAL | Price in VND |
-| category | VARCHAR | coffee/tea/smoothie/juice |
-| is_available | BOOLEAN | Availability status |
+
+| Column       | Type    | Description               |
+| ------------ | ------- | ------------------------- |
+| id           | SERIAL  | Primary key               |
+| name         | VARCHAR | Product name              |
+| price        | DECIMAL | Price in VND              |
+| category     | VARCHAR | coffee/tea/smoothie/juice |
+| is_available | BOOLEAN | Availability status       |
 
 ### orders
-| Column | Type | Description |
-|--------|------|-------------|
-| id | SERIAL | Primary key |
-| customer_name | VARCHAR | Customer's display name |
-| status | VARCHAR | pending/making/done/cancelled |
-| note | TEXT | Order notes |
-| created_at | TIMESTAMP | Order timestamp |
+
+| Column        | Type      | Description                   |
+| ------------- | --------- | ----------------------------- |
+| id            | SERIAL    | Primary key                   |
+| customer_name | VARCHAR   | Customer's display name       |
+| status        | VARCHAR   | pending/making/done/cancelled |
+| note          | TEXT      | Order notes                   |
+| created_at    | TIMESTAMP | Order timestamp               |
 
 ### order_items
-| Column | Type | Description |
-|--------|------|-------------|
-| id | SERIAL | Primary key |
-| order_id | INTEGER | FK to orders |
-| product_id | INTEGER | FK to products |
-| quantity | INTEGER | Item quantity |
-| options_json | JSONB | Customization options |
+
+| Column       | Type    | Description           |
+| ------------ | ------- | --------------------- |
+| id           | SERIAL  | Primary key           |
+| order_id     | INTEGER | FK to orders          |
+| product_id   | INTEGER | FK to products        |
+| quantity     | INTEGER | Item quantity         |
+| options_json | JSONB   | Customization options |
 
 ## 🔌 Socket.IO Events
 
-| Event | Direction | Description |
-|-------|-----------|-------------|
-| `menu:update` | Server → Client | Menu item updated |
-| `order:new` | Server → Client | New order placed |
-| `order:status` | Server → Client | Order status changed |
-| `orders:reset` | Server → Client | All orders cleared |
-| `join:customer` | Client → Server | Join customer room |
-| `join:admin` | Client → Server | Join admin room |
+| Event             | Direction        | Description          |
+| ----------------- | ---------------- | -------------------- |
+| `menu:update`   | Server → Client | Menu item updated    |
+| `order:new`     | Server → Client | New order placed     |
+| `order:status`  | Server → Client | Order status changed |
+| `orders:reset`  | Server → Client | All orders cleared   |
+| `join:customer` | Client → Server | Join customer room   |
+| `join:admin`    | Client → Server | Join admin room      |
 
 ## 📸 Screenshots
 
 ### Landing Page
+
 - Beautiful entry with animated coffee cup
 - Simple name input to start ordering
 
 ### Menu View
+
 - Category filtering (Coffee, Tea, Smoothie, Juice)
 - Real-time availability updates
 - Drink customization modal
 
 ### Cart & Order
+
 - Slide-in cart drawer
 - Order notes support
 - Real-time order tracking
 
 ### Admin Dashboard
+
 - Status filter tabs
 - One-click status updates
 - Menu availability toggles
@@ -231,4 +242,3 @@ MIT License - feel free to use this for your own coffee shop!
 ---
 
 Built with ❤️ and ☕ for PSC Students
-
