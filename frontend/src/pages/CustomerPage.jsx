@@ -718,8 +718,8 @@ export default function CustomerPage() {
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <button className={styles.backBtn} onClick={() => navigate('/')}>
-            <ArrowLeft size={20} />
+          <button className={styles.logoBtn} onClick={() => navigate('/')} title="CaféPSC - Phenikaa School of Computing">
+            <img src="/images/logo.jpg" alt="Logo PSC" className={styles.logoImg} />
           </button>
           <div className={styles.greetingContainer}>
             <div>
