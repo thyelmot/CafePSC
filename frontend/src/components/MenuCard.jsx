@@ -15,6 +15,12 @@ export default function MenuCard({ product, onAdd, style }) {
     if (nameLower.includes('cam')) {
       return '🍊'; // Orange cho nước cam
     }
+    if (nameLower.includes('dừa')) {
+      return '🥥'; // Dừa cho Cafe nước dừa, cốt dừa
+    }
+    if (nameLower.includes('matcha')) {
+      return '🍵'; // Trà xanh cho Matcha latte
+    }
     
     // Nếu không có tên cụ thể, dùng category
     const categoryEmoji = {

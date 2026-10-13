@@ -1,21 +1,11 @@
 export const INITIAL_MOCK_PRODUCTS = [
-  { id: 1, name: 'Cà Phê Sữa Đá', price: 25000, category: 'coffee', is_available: true },
-  { id: 2, name: 'Cà Phê Đen Đá', price: 20000, category: 'coffee', is_available: true },
-  { id: 3, name: 'Bạc Xỉu', price: 28000, category: 'coffee', is_available: true },
-  { id: 4, name: 'Cà Phê Trứng', price: 35000, category: 'coffee', is_available: true },
-  { id: 5, name: 'Latte', price: 40000, category: 'coffee', is_available: true },
-  { id: 6, name: 'Cappuccino', price: 40000, category: 'coffee', is_available: true },
-  { id: 7, name: 'Americano', price: 35000, category: 'coffee', is_available: true },
-  { id: 8, name: 'Mocha', price: 45000, category: 'coffee', is_available: true },
-  { id: 9, name: 'Trà Đào', price: 30000, category: 'tea', is_available: true },
-  { id: 10, name: 'Trà Vải', price: 30000, category: 'tea', is_available: true },
-  { id: 11, name: 'Trà Chanh', price: 25000, category: 'tea', is_available: true },
-  { id: 12, name: 'Hồng Trà', price: 25000, category: 'tea', is_available: true },
-  { id: 13, name: 'Matcha Latte', price: 45000, category: 'tea', is_available: true },
-  { id: 14, name: 'Sinh Tố Bơ', price: 35000, category: 'smoothie', is_available: true },
-  { id: 15, name: 'Sinh Tố Xoài', price: 30000, category: 'smoothie', is_available: true },
-  { id: 16, name: 'Nước cam', price: 20000, category: 'juice', is_available: true },
-  { id: 17, name: 'Nước chanh leo', price: 20000, category: 'juice', is_available: true },
+  { id: 1, name: 'Cà phê đen (đá)', price: 20000, category: 'coffee', is_available: true },
+  { id: 2, name: 'Cà phê sữa', price: 20000, category: 'coffee', is_available: true },
+  { id: 3, name: 'Bạc xỉu', price: 25000, category: 'coffee', is_available: true },
+  { id: 4, name: 'Cafe latte', price: 35000, category: 'coffee', is_available: true },
+  { id: 5, name: 'Cafe nước dừa', price: 35000, category: 'coffee', is_available: true },
+  { id: 6, name: 'Cafe cốt dừa', price: 35000, category: 'coffee', is_available: true },
+  { id: 7, name: 'Matcha latte', price: 35000, category: 'tea', is_available: true },
 ];
 
 export const INITIAL_MOCK_ORDERS = [

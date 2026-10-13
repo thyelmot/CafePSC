@@ -58,27 +58,17 @@ BEGIN
   END IF;
 END $$;
 
--- 6. Initial Menu Data (Chỉ thêm nếu chưa có món đó)
+-- 6. Initial Menu Data
 INSERT INTO products (name, price, category, is_available)
 SELECT v.name, v.price, v.category, v.is_available
 FROM (VALUES
-  ('Cà Phê Sữa Đá', 25000, 'coffee', true),
-  ('Cà Phê Đen Đá', 20000, 'coffee', true),
-  ('Bạc Xỉu', 28000, 'coffee', true),
-  ('Cà Phê Trứng', 35000, 'coffee', true),
-  ('Latte', 40000, 'coffee', true),
-  ('Cappuccino', 40000, 'coffee', true),
-  ('Americano', 35000, 'coffee', true),
-  ('Mocha', 45000, 'coffee', true),
-  ('Trà Đào', 30000, 'tea', true),
-  ('Trà Vải', 30000, 'tea', true),
-  ('Trà Chanh', 25000, 'tea', true),
-  ('Hồng Trà', 25000, 'tea', true),
-  ('Matcha Latte', 45000, 'tea', true),
-  ('Sinh Tố Bơ', 35000, 'smoothie', true),
-  ('Sinh Tố Xoài', 30000, 'smoothie', true),
-  ('Nước cam', 20000, 'juice', true),
-  ('Nước chanh leo', 20000, 'juice', true)
+  ('Cà phê đen (đá)', 20000, 'coffee', true),
+  ('Cà phê sữa', 20000, 'coffee', true),
+  ('Bạc xỉu', 25000, 'coffee', true),
+  ('Cafe latte', 35000, 'coffee', true),
+  ('Cafe nước dừa', 35000, 'coffee', true),
+  ('Cafe cốt dừa', 35000, 'coffee', true),
+  ('Matcha latte', 35000, 'tea', true)
 ) AS v(name, price, category, is_available)
 WHERE NOT EXISTS (
   SELECT 1 FROM products WHERE products.name = v.name
