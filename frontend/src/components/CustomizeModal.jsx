@@ -1,11 +1,7 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import styles from './CustomizeModal.module.css';
-
-const SIZE_OPTIONS = [
-  { value: 'M', label: 'Vừa (M)', priceAdd: 0 },
-  { value: 'L', label: 'Lớn (L)', priceAdd: 5000 },
-];
+import { normalizeSizes, calculateUnitPrice } from '../utils/productUtils';
 
 const SUGAR_OPTIONS = [
   { value: '0%', label: 'Không đường' },
@@ -23,22 +19,18 @@ const ICE_OPTIONS = [
 ];
 
 export default function CustomizeModal({ product, onClose, onConfirm, onPlaceOrder }) {
+  const sizeOptions = useMemo(() => normalizeSizes(product?.sizes), [product?.sizes]);
+  const defaultSize = sizeOptions[0]?.value || 'M';
+
   const [options, setOptions] = useState({
-    size: 'M',
+    size: defaultSize,
     sugar: '70%',
     ice: 'Bình thường',
   });
   const [quantity, setQuantity] = useState(1);
 
-  const calculateUnitPrice = () => {
-    let total = product.price;
-    const sizeOption = SIZE_OPTIONS.find(s => s.value === options.size);
-    if (sizeOption) total += sizeOption.priceAdd;
-    return total;
-  };
-
   const calculateTotal = () => {
-    return calculateUnitPrice() * quantity;
+    return calculateUnitPrice(product, options) * quantity;
   };
 
   const handleQuantityChange = (delta) => {
@@ -73,26 +65,28 @@ export default function CustomizeModal({ product, onClose, onConfirm, onPlaceOrd
 
         {/* Options */}
         <div className={styles.options}>
-          {/* Size */}
-          <div className={styles.optionGroup}>
-            <h3 className={styles.optionLabel}>Kích cỡ</h3>
-            <div className={styles.optionButtons}>
-              {SIZE_OPTIONS.map(size => (
-                <button
-                  key={size.value}
-                  className={`${styles.optionBtn} ${options.size === size.value ? styles.selected : ''}`}
-                  onClick={() => setOptions(prev => ({ ...prev, size: size.value }))}
-                >
-                  <span className={styles.optionText}>{size.label}</span>
-                  {size.priceAdd !== 0 && (
-                    <span className={styles.optionPrice}>
-                      {size.priceAdd > 0 ? '+' : ''}{size.priceAdd.toLocaleString('vi-VN')}đ
-                    </span>
-                  )}
-                </button>
-              ))}
+          {/* Size (chỉ hiển thị khi sản phẩm có từ 2 size trở lên) */}
+          {sizeOptions.length > 1 && (
+            <div className={styles.optionGroup}>
+              <h3 className={styles.optionLabel}>Kích cỡ</h3>
+              <div className={styles.optionButtons}>
+                {sizeOptions.map(size => (
+                  <button
+                    key={size.value}
+                    className={`${styles.optionBtn} ${options.size === size.value ? styles.selected : ''}`}
+                    onClick={() => setOptions(prev => ({ ...prev, size: size.value }))}
+                  >
+                    <span className={styles.optionText}>{size.label}</span>
+                    {size.priceAdd !== 0 && (
+                      <span className={styles.optionPrice}>
+                        {size.priceAdd > 0 ? '+' : ''}{size.priceAdd.toLocaleString('vi-VN')}đ
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Sugar */}
           <div className={styles.optionGroup}>

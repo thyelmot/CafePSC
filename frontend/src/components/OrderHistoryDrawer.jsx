@@ -1,19 +1,7 @@
 import { Clock, Coffee, CheckCircle2, XCircle, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState } from 'react';
 import styles from './OrderHistoryDrawer.module.css';
-
-// Size price additions (must match CustomizeModal and CartDrawer)
-const SIZE_PRICES = {
-  'M': 0,
-  'L': 5000,
-};
-
-// Calculate unit price based on product price + size addition
-const calculateUnitPrice = (product, options) => {
-  const basePrice = product?.price || 0;
-  const sizeAdd = SIZE_PRICES[options?.size] || 0;
-  return basePrice + sizeAdd;
-};
+import { calculateUnitPrice } from '../utils/productUtils';
 
 export default function OrderHistoryDrawer({ isOpen, onClose, orders, onCancelOrder }) {
   const [expandedOrderId, setExpandedOrderId] = useState(null);
@@ -176,5 +164,3 @@ export default function OrderHistoryDrawer({ isOpen, onClose, orders, onCancelOr
     </>
   );
 }
-
-

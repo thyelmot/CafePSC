@@ -1,11 +1,16 @@
+export const DEFAULT_SIZES = [
+  { value: 'M', label: 'Vừa (M)', priceAdd: 0 },
+  { value: 'L', label: 'Lớn (L)', priceAdd: 5000 },
+];
+
 export const INITIAL_MOCK_PRODUCTS = [
-  { id: 1, name: 'Cà phê đen (đá)', price: 20000, category: 'coffee', is_available: true },
-  { id: 2, name: 'Cà phê sữa', price: 20000, category: 'coffee', is_available: true },
-  { id: 3, name: 'Bạc xỉu', price: 25000, category: 'coffee', is_available: true },
-  { id: 4, name: 'Cafe latte', price: 35000, category: 'coffee', is_available: true },
-  { id: 5, name: 'Cafe nước dừa', price: 35000, category: 'coffee', is_available: true },
-  { id: 6, name: 'Cafe cốt dừa', price: 35000, category: 'coffee', is_available: true },
-  { id: 7, name: 'Matcha latte', price: 35000, category: 'tea', is_available: true },
+  { id: 1, name: 'Cà phê đen (đá)', price: 20000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 2, name: 'Cà phê sữa', price: 20000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 3, name: 'Bạc xỉu', price: 25000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 4, name: 'Cafe latte', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 5, name: 'Cafe nước dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 6, name: 'Cafe cốt dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 7, name: 'Matcha latte', price: 35000, category: 'tea', is_available: true, sizes: DEFAULT_SIZES },
 ];
 
 export const INITIAL_MOCK_ORDERS = [

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import OrderCard from '../components/OrderCard';
 import styles from './AdminPage.module.css';
+import { calculateUnitPrice } from '../utils/productUtils';
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -457,18 +458,7 @@ export default function AdminPage() {
       {activeTab === 'stats' && (
         <div className={styles.statsSection}>
           {(() => {
-            // Size price additions (must match CustomizeModal and CartDrawer)
-            const SIZE_PRICES = {
-              'M': 0,
-              'L': 5000,
-            };
 
-            // Calculate unit price based on product price + size addition
-            const calculateUnitPrice = (product, options) => {
-              const basePrice = product?.price || 0;
-              const sizeAdd = SIZE_PRICES[options?.size] || 0;
-              return basePrice + sizeAdd;
-            };
 
             // Filter completed orders by date if selected
             let completedOrders = orders.filter(o => o.status === 'done');

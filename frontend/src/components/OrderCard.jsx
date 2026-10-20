@@ -1,18 +1,6 @@
 import { Clock, Coffee, CheckCircle2, User, MessageSquare, ArrowRight, XCircle, Phone, MapPin, DollarSign, Trash2 } from 'lucide-react';
 import styles from './OrderCard.module.css';
-
-// Size price additions (must match CustomizeModal and CartDrawer)
-const SIZE_PRICES = {
-  'M': 0,
-  'L': 5000,
-};
-
-// Calculate unit price based on product price + size addition
-const calculateUnitPrice = (product, options) => {
-  const basePrice = product?.price || 0;
-  const sizeAdd = SIZE_PRICES[options?.size] || 0;
-  return basePrice + sizeAdd;
-};
+import { calculateUnitPrice } from '../utils/productUtils';
 
 export default function OrderCard({ order, onStatusUpdate, onDelete, style }) {
   const { id, customer_name, phone, delivery_address, status, note, order_items, created_at } = order;
@@ -179,4 +167,3 @@ export default function OrderCard({ order, onStatusUpdate, onDelete, style }) {
     </div>
   );
 }
-
