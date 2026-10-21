@@ -1,6 +1,5 @@
 export const DEFAULT_SIZES = [
-  { value: 'M', label: 'Vừa (M)', priceAdd: 0 },
-  { value: 'L', label: 'Lớn (L)', priceAdd: 5000 },
+  { value: 'M', label: 'Tiêu chuẩn (M)', priceAdd: 0 },
 ];
 
 export const INITIAL_MOCK_PRODUCTS = [
@@ -85,7 +84,16 @@ export function getMockProducts() {
   const saved = localStorage.getItem('cafepsc_mock_products');
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Ensure products use updated single size if only M is active
+      const updated = parsed.map(p => ({
+        ...p,
+        sizes: (p.sizes && p.sizes.length > 0 && !p.sizes.some(s => (s.value || s.name) === 'L')) 
+          ? p.sizes 
+          : DEFAULT_SIZES
+      }));
+      localStorage.setItem('cafepsc_mock_products', JSON.stringify(updated));
+      return updated;
     } catch (e) {}
   }
   localStorage.setItem('cafepsc_mock_products', JSON.stringify(INITIAL_MOCK_PRODUCTS));

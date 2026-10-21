@@ -117,7 +117,15 @@ export default function AdminPage() {
 
     // New order notification - chỉ hiển thị khi admin đã đăng nhập
     socket.on('order:new', (order) => {
-      setOrders(prev => [order, ...prev]);
+      setOrders(prev => {
+        const index = prev.findIndex(o => o.id === order.id);
+        if (index >= 0) {
+          const updated = [...prev];
+          updated[index] = order;
+          return updated;
+        }
+        return [order, ...prev];
+      });
       // Play notification sound
       const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2teleWRYSoGVpZyLf3d3doKIhoF4bmhobnqEi4uGf3l1d36FiYmFgXt5e4KIiomFgXx6fYOJi4qGgX18foSKjIuHg358foWKjIuIhH59f4WLjYuJhYB+f4aMjoyKhoF/gIaMjoyKhoKAgYaNjoyKhoKBgYeNjoyKhoKBgoiOj42LiIOCgoiOj42LiIOCgoiPkI6MiYSDg4mQkI6MiYSEhImQkY+NioWEhYqRko+NioaFhYqSkpCOi4aFhYuSk5CPjIeGhouSlJGQjYiHh4yTlJKRjoiHiI2UlZOSj4mIiY6VlZSTkIqJiY+VlpWUkYuKio+Wl5aVkou');
       audio.volume = 0.5;

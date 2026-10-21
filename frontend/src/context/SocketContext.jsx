@@ -32,27 +32,40 @@ export function SocketProvider({ children }) {
   const [isConnected, setIsConnected] = useState(false);
   const listenersRef = useRef({});
 
-  // Fetch complete order with order_items
-  const fetchCompleteOrder = async (orderId) => {
+  // Fetch complete order with order_items (retry để tránh race condition khi order_items chưa kịp insert)
+  const fetchCompleteOrder = async (orderId, maxRetries = 4, delayMs = 350) => {
     if (!supabaseClient) return null;
     
-    const { data, error } = await supabaseClient
-      .from('orders')
-      .select(`
-        *,
-        order_items (
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const { data, error } = await supabaseClient
+        .from('orders')
+        .select(`
           *,
-          product:products (*)
-        )
-      `)
-      .eq('id', orderId)
-      .single();
-    
-    if (error) {
-      console.error('Error fetching order:', error);
-      return null;
+          order_items (
+            *,
+            product:products (*)
+          )
+        `)
+        .eq('id', orderId)
+        .single();
+      
+      if (error) {
+        console.error('Error fetching order:', error);
+        return null;
+      }
+
+      // Nếu đơn hàng đã có danh sách món chi tiết, trả về ngay lập tức
+      if (data && Array.isArray(data.order_items) && data.order_items.length > 0) {
+        return data;
+      }
+
+      // Nếu chưa có order_items (backend đang trong quá trình ghi bảng order_items), đợi rồi thử lại
+      if (attempt < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delayMs));
+      } else {
+        return data;
+      }
     }
-    return data;
   };
 
   useEffect(() => {

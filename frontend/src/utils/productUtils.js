@@ -1,6 +1,5 @@
 export const DEFAULT_SIZES = [
-  { value: 'M', label: 'Vừa (M)', priceAdd: 0 },
-  { value: 'L', label: 'Lớn (L)', priceAdd: 5000 },
+  { value: 'M', label: 'Tiêu chuẩn (M)', priceAdd: 0 },
 ];
 
 /**

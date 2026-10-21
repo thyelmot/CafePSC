@@ -223,16 +223,22 @@ export default function CustomerPage() {
     // New order (for tracking)
     socket.on('order:new', (order) => {
       setAllOrders(prev => {
-        // Check if order already exists to prevent duplicates
-        const exists = prev.some(o => o.id === order.id);
-        if (exists) return prev;
+        const index = prev.findIndex(o => o.id === order.id);
+        if (index >= 0) {
+          const updated = [...prev];
+          updated[index] = order;
+          return updated;
+        }
         return [order, ...prev];
       });
       if (order.customer_name === customerName && order.phone === customerPhone) {
         setOrders(prev => {
-          // Check if order already exists to prevent duplicates
-          const exists = prev.some(o => o.id === order.id);
-          if (exists) return prev;
+          const index = prev.findIndex(o => o.id === order.id);
+          if (index >= 0) {
+            const updated = [...prev];
+            updated[index] = order;
+            return updated;
+          }
           return [order, ...prev];
         });
         // Note: Toast is already shown after createOrder success, so we don't show it here to avoid duplicate
@@ -410,16 +416,24 @@ export default function CustomerPage() {
         
         // Update orders state immediately
         setAllOrders(prev => {
-          const exists = prev.some(o => o.id === newOrder.id);
-          if (exists) return prev;
+          const index = prev.findIndex(o => o.id === newOrder.id);
+          if (index >= 0) {
+            const updated = [...prev];
+            updated[index] = newOrder;
+            return updated;
+          }
           return [newOrder, ...prev];
         });
         
         // Update customer orders if it matches
         if (newOrder.customer_name === info.name && newOrder.phone === info.phone) {
           setOrders(prev => {
-            const exists = prev.some(o => o.id === newOrder.id);
-            if (exists) return prev;
+            const index = prev.findIndex(o => o.id === newOrder.id);
+            if (index >= 0) {
+              const updated = [...prev];
+              updated[index] = newOrder;
+              return updated;
+            }
             return [newOrder, ...prev];
           });
         }
@@ -558,6 +572,26 @@ export default function CustomerPage() {
       });
       const newOrder = await createOrder(orderData);
       
+      // Update/replace with confirmed complete newOrder
+      setAllOrders(prev => {
+        const index = prev.findIndex(o => o.id === newOrder.id);
+        if (index >= 0) {
+          const updated = [...prev];
+          updated[index] = newOrder;
+          return updated;
+        }
+        return [newOrder, ...prev];
+      });
+      setOrders(prev => {
+        const index = prev.findIndex(o => o.id === newOrder.id);
+        if (index >= 0) {
+          const updated = [...prev];
+          updated[index] = newOrder;
+          return updated;
+        }
+        return [newOrder, ...prev];
+      });
+
       // Ensure order has order_items with product data
       if (!newOrder.order_items || !Array.isArray(newOrder.order_items) || newOrder.order_items.length === 0) {
         console.error('Order created but missing order_items:', newOrder);
