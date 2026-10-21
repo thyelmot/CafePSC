@@ -132,12 +132,14 @@ export function createMockOrder(orderData) {
   const newId = Date.now();
 
   const formattedItems = (orderData.items || []).map((item, idx) => {
-    const product = products.find(p => p.id === Number(item.product_id)) || {
-      id: item.product_id,
-      name: 'Món nước',
-      price: 25000,
-      category: 'coffee'
-    };
+    const product = products.find(p => p.id === Number(item.product_id)) || 
+      INITIAL_MOCK_PRODUCTS.find(p => p.id === Number(item.product_id)) || 
+      item.product || {
+        id: item.product_id,
+        name: item.name || 'Bạc xỉu',
+        price: 25000,
+        category: 'coffee'
+      };
     return {
       id: newId + idx + 1,
       order_id: newId,

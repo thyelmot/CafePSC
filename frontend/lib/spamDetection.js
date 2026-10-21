@@ -153,11 +153,11 @@ export function detectSpamAddress(address) {
   
   const addr = address.trim().toLowerCase();
   
-  // Pattern 1: Sequential address (A1, A2, address1, address2...)
-  const sequentialMatch = addr.match(/^(A|address|diachi|add|test|demo|spam)\s*(\d+)$/i);
+  // Pattern 1: Sequential spam keywords (address1, test2, demo3...)
+  // Không chặn A1, P301, B202 vì đây là mã phòng/tòa nhà trường Phenikaa
+  const sequentialMatch = addr.match(/^(address|diachi|fake|test|demo|spam)\s*(\d+)$/i);
   if (sequentialMatch) {
     const number = parseInt(sequentialMatch[2]);
-    // Chặn nếu số từ 1 đến 100000
     if (number >= 1 && number <= 100000) {
       return {
         isSpam: true,
@@ -168,19 +168,7 @@ export function detectSpamAddress(address) {
     }
   }
   
-  // Pattern 2: Địa chỉ quá ngắn và chỉ có số (A1, B2, C3...)
-  if (addr.length <= 3 && /^[a-z]\d+$/i.test(addr)) {
-    const number = parseInt(addr.match(/\d+/)?.[0] || '0');
-    if (number >= 1 && number <= 100000) {
-      return {
-        isSpam: true,
-        reason: 'Địa chỉ quá ngắn và có pattern spam',
-        pattern: 'short_sequential_address'
-      };
-    }
-  }
-  
-  // Pattern 3: Địa chỉ chỉ có từ spam + số
+  // Pattern 2: Địa chỉ chỉ có từ khóa spam rõ ràng + số
   const spamWords = ['test', 'demo', 'spam', 'fake', 'hack', 'bot'];
   for (const word of spamWords) {
     if (addr.includes(word) && /\d+/.test(addr)) {
@@ -190,15 +178,6 @@ export function detectSpamAddress(address) {
         pattern: 'spam_keyword_address'
       };
     }
-  }
-  
-  // Pattern 4: Địa chỉ quá ngắn (< 5 ký tự) và có số
-  if (addr.length < 5 && /\d+/.test(addr)) {
-    return {
-      isSpam: true,
-      reason: 'Địa chỉ quá ngắn và có dấu hiệu spam',
-      pattern: 'too_short_address'
-    };
   }
   
   return { isSpam: false };
