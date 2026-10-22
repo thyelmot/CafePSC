@@ -3,14 +3,14 @@ export const DEFAULT_SIZES = [
 ];
 
 export const INITIAL_MOCK_PRODUCTS = [
-  { id: 1, name: 'Cà phê đen (đá)', price: 20000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 2, name: 'Cà phê sữa', price: 20000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 3, name: 'Bạc xỉu', price: 25000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 4, name: 'Cafe latte', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 5, name: 'Cafe nước dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 6, name: 'Cafe cốt dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 7, name: 'Matcha latte', price: 35000, category: 'tea', is_available: true, sizes: DEFAULT_SIZES },
-  { id: 8, name: 'Dây thẻ', price: 30000, category: 'merch', is_available: true, sizes: [] },
+  { id: 18, name: 'Cà phê đen (đá)', price: 20000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 19, name: 'Cà phê sữa', price: 20000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 20, name: 'Bạc xỉu', price: 25000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 21, name: 'Cafe latte', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 22, name: 'Cafe nước dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 23, name: 'Cafe cốt dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 24, name: 'Matcha latte', price: 35000, category: 'tea', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 26, name: 'Dây thẻ', price: 30000, category: 'merch', is_available: true, sizes: [] },
 ];
 
 export const INITIAL_MOCK_ORDERS = [
@@ -86,11 +86,24 @@ export function getMockProducts() {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      // Tự động bổ sung bất kỳ món mới nào có trong INITIAL_MOCK_PRODUCTS (như Dây thẻ)
-      const existingIds = new Set(parsed.map(p => p.id));
-      const missingProducts = INITIAL_MOCK_PRODUCTS.filter(p => !existingIds.has(p.id));
+      // Tự động phát hiện menu 17 món cũ (có Cà Phê Trứng, Mocha, v.v.) và reset sạch về đúng 8 món chuẩn
+      const isLegacyMenu = parsed.length > 8 || parsed.some(p => 
+        p.name === 'Cà Phê Trứng' || p.name === 'Mocha' || p.name === 'Trà Đào' || p.name === 'Sinh Tố Bơ'
+      );
+      if (isLegacyMenu) {
+        localStorage.setItem('cafepsc_mock_products', JSON.stringify(INITIAL_MOCK_PRODUCTS));
+        return INITIAL_MOCK_PRODUCTS;
+      }
       
-      const updated = [...parsed, ...missingProducts].map(p => ({
+      // Luôn kiểm tra theo TÊN để bổ sung Dây thẻ nếu chưa có
+      const hasMerch = parsed.some(p => p.name.toLowerCase().includes('dây thẻ'));
+      let list = parsed;
+      if (!hasMerch) {
+        const merchItem = INITIAL_MOCK_PRODUCTS.find(p => p.name === 'Dây thẻ');
+        if (merchItem) list = [...list, merchItem];
+      }
+
+      const updated = list.map(p => ({
         ...p,
         sizes: (p.category === 'merch' || p.category === 'accessories') 
           ? [] 
