@@ -10,6 +10,7 @@ export const INITIAL_MOCK_PRODUCTS = [
   { id: 5, name: 'Cafe nước dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
   { id: 6, name: 'Cafe cốt dừa', price: 35000, category: 'coffee', is_available: true, sizes: DEFAULT_SIZES },
   { id: 7, name: 'Matcha latte', price: 35000, category: 'tea', is_available: true, sizes: DEFAULT_SIZES },
+  { id: 8, name: 'Dây thẻ', price: 30000, category: 'merch', is_available: true, sizes: [] },
 ];
 
 export const INITIAL_MOCK_ORDERS = [

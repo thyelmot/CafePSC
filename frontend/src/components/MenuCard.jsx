@@ -21,6 +21,9 @@ export default function MenuCard({ product, onAdd, style }) {
     if (nameLower.includes('matcha')) {
       return '🍵'; // Trà xanh cho Matcha latte
     }
+    if (nameLower.includes('dây thẻ') || nameLower.includes('thẻ') || productCategory === 'merch' || productCategory === 'accessories') {
+      return '🪪'; // Icon dây thẻ / thẻ sinh viên
+    }
     
     // Nếu không có tên cụ thể, dùng category
     const categoryEmoji = {
@@ -28,9 +31,18 @@ export default function MenuCard({ product, onAdd, style }) {
       tea: '🍵',
       smoothie: '🥤',
       juice: '🍊',
+      merch: '🪪',
+      accessories: '🪪',
     };
     
     return categoryEmoji[productCategory] || '☕';
+  };
+
+  const getCategoryLabel = (cat) => {
+    if (cat === 'coffee') return 'Cà phê';
+    if (cat === 'tea') return 'Trà';
+    if (cat === 'merch' || cat === 'accessories') return 'Dây thẻ';
+    return cat;
   };
 
   return (
@@ -42,7 +54,7 @@ export default function MenuCard({ product, onAdd, style }) {
         <span className={styles.emoji}>
           {getProductEmoji(name, category)}
         </span>
-        <span className={styles.category}>{category}</span>
+        <span className={styles.category}>{getCategoryLabel(category)}</span>
       </div>
       
       <div className={styles.cardBody}>

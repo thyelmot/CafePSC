@@ -536,6 +536,8 @@ export default function AdminPage() {
               tea: '🍵',
               smoothie: '🥤',
               juice: '🍊',
+              merch: '🪪',
+              accessories: '🪪',
               other: '📦'
             };
 
@@ -664,9 +666,12 @@ export default function AdminPage() {
                             {category === 'coffee' ? 'Cà phê' :
                              category === 'tea' ? 'Trà' :
                              category === 'smoothie' ? 'Sinh tố' :
-                             category === 'juice' ? 'Nước ép' : category}
+                             category === 'juice' ? 'Nước ép' :
+                             (category === 'merch' || category === 'accessories') ? 'Dây thẻ' : category}
                           </span>
-                          <span className={styles.categoryQty}>{data.quantity} ly</span>
+                          <span className={styles.categoryQty}>
+                            {data.quantity} {(category === 'merch' || category === 'accessories') ? 'dây' : 'ly'}
+                          </span>
                         </div>
                         <span className={styles.categoryRevenue}>
                           {data.revenue.toLocaleString('vi-VN')}đ
@@ -730,7 +735,7 @@ export default function AdminPage() {
                   <p className={styles.menuItemPrice}>
                     {product.price.toLocaleString('vi-VN')}đ
                   </p>
-                  <span className={styles.menuItemCategory}>{product.category}</span>
+                  <span className={styles.menuItemCategory}>{(product.category === 'merch' || product.category === 'accessories') ? 'Dây thẻ' : product.category}</span>
                 </div>
                 <button
                   className={`${styles.toggleBtn} ${product.is_available ? styles.on : styles.off}`}

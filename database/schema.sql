@@ -73,7 +73,8 @@ FROM (VALUES
   ('Cafe latte', 35000, 'coffee', true),
   ('Cafe nước dừa', 35000, 'coffee', true),
   ('Cafe cốt dừa', 35000, 'coffee', true),
-  ('Matcha latte', 35000, 'tea', true)
+  ('Matcha latte', 35000, 'tea', true),
+  ('Dây thẻ', 30000, 'merch', true)
 ) AS v(name, price, category, is_available)
 WHERE NOT EXISTS (
   SELECT 1 FROM products WHERE products.name = v.name

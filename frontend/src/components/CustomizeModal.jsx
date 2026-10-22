@@ -19,13 +19,17 @@ const ICE_OPTIONS = [
 ];
 
 export default function CustomizeModal({ product, onClose, onConfirm, onPlaceOrder }) {
-  const sizeOptions = useMemo(() => normalizeSizes(product?.sizes), [product?.sizes]);
-  const defaultSize = sizeOptions[0]?.value || 'M';
+  const isDrink = product?.category !== 'merch' && product?.category !== 'accessories';
+  const sizeOptions = useMemo(() => isDrink ? normalizeSizes(product?.sizes) : [], [product?.sizes, isDrink]);
+  const defaultSize = sizeOptions[0]?.value || '';
 
-  const [options, setOptions] = useState({
-    size: defaultSize,
-    sugar: '70%',
-    ice: 'Bình thường',
+  const [options, setOptions] = useState(() => {
+    if (!isDrink) return {};
+    return {
+      size: defaultSize || 'M',
+      sugar: '70%',
+      ice: 'Bình thường',
+    };
   });
   const [quantity, setQuantity] = useState(1);
 
@@ -63,64 +67,65 @@ export default function CustomizeModal({ product, onClose, onConfirm, onPlaceOrd
           </button>
         </div>
 
-        {/* Options */}
-        <div className={styles.options}>
-          {/* Size (chỉ hiển thị khi sản phẩm có từ 2 size trở lên) */}
-          {sizeOptions.length > 1 && (
+        {/* Options (chỉ hiển thị cho đồ uống có tùy chọn) */}
+        {isDrink && (
+          <div className={styles.options}>
+            {/* Size (chỉ hiển thị khi sản phẩm có từ 2 size trở lên) */}
+            {sizeOptions.length > 1 && (
+              <div className={styles.optionGroup}>
+                <h3 className={styles.optionLabel}>Kích cỡ</h3>
+                <div className={styles.optionButtons}>
+                  {sizeOptions.map(size => (
+                    <button
+                      key={size.value}
+                      className={`${styles.optionBtn} ${options.size === size.value ? styles.selected : ''}`}
+                      onClick={() => setOptions(prev => ({ ...prev, size: size.value }))}
+                    >
+                      <span className={styles.optionText}>{size.label}</span>
+                      {size.priceAdd !== 0 && (
+                        <span className={styles.optionPrice}>
+                          {size.priceAdd > 0 ? '+' : ''}{size.priceAdd.toLocaleString('vi-VN')}đ
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Sugar */}
             <div className={styles.optionGroup}>
-              <h3 className={styles.optionLabel}>Kích cỡ</h3>
+              <h3 className={styles.optionLabel}>Độ ngọt</h3>
               <div className={styles.optionButtons}>
-                {sizeOptions.map(size => (
+                {SUGAR_OPTIONS.map(sugar => (
                   <button
-                    key={size.value}
-                    className={`${styles.optionBtn} ${options.size === size.value ? styles.selected : ''}`}
-                    onClick={() => setOptions(prev => ({ ...prev, size: size.value }))}
+                    key={sugar.value}
+                    className={`${styles.optionBtn} ${styles.small} ${options.sugar === sugar.value ? styles.selected : ''}`}
+                    onClick={() => setOptions(prev => ({ ...prev, sugar: sugar.value }))}
                   >
-                    <span className={styles.optionText}>{size.label}</span>
-                    {size.priceAdd !== 0 && (
-                      <span className={styles.optionPrice}>
-                        {size.priceAdd > 0 ? '+' : ''}{size.priceAdd.toLocaleString('vi-VN')}đ
-                      </span>
-                    )}
+                    {sugar.label}
                   </button>
                 ))}
               </div>
             </div>
-          )}
 
-          {/* Sugar */}
-          <div className={styles.optionGroup}>
-            <h3 className={styles.optionLabel}>Độ ngọt</h3>
-            <div className={styles.optionButtons}>
-              {SUGAR_OPTIONS.map(sugar => (
-                <button
-                  key={sugar.value}
-                  className={`${styles.optionBtn} ${styles.small} ${options.sugar === sugar.value ? styles.selected : ''}`}
-                  onClick={() => setOptions(prev => ({ ...prev, sugar: sugar.value }))}
-                >
-                  {sugar.label}
-                </button>
-              ))}
+            {/* Ice */}
+            <div className={styles.optionGroup}>
+              <h3 className={styles.optionLabel}>Đá</h3>
+              <div className={styles.optionButtons}>
+                {ICE_OPTIONS.map(ice => (
+                  <button
+                    key={ice.value}
+                    className={`${styles.optionBtn} ${styles.small} ${options.ice === ice.value ? styles.selected : ''}`}
+                    onClick={() => setOptions(prev => ({ ...prev, ice: ice.value }))}
+                  >
+                    {ice.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-
-          {/* Ice */}
-          <div className={styles.optionGroup}>
-            <h3 className={styles.optionLabel}>Đá</h3>
-            <div className={styles.optionButtons}>
-              {ICE_OPTIONS.map(ice => (
-                <button
-                  key={ice.value}
-                  className={`${styles.optionBtn} ${styles.small} ${options.ice === ice.value ? styles.selected : ''}`}
-                  onClick={() => setOptions(prev => ({ ...prev, ice: ice.value }))}
-                >
-                  {ice.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-        </div>
+        )}
 
         {/* Footer */}
         <div className={styles.footer}>

@@ -815,7 +815,8 @@ export default function CustomerPage() {
              cat === 'coffee' ? '☕ Cà phê' :
              cat === 'tea' ? '🍵 Trà' :
              cat === 'smoothie' ? '🥤 Sinh tố' :
-             cat === 'juice' ? '🍊 Nước ép' : cat}
+             cat === 'juice' ? '🍊 Nước ép' :
+             (cat === 'merch' || cat === 'accessories') ? '🪪 Dây thẻ' : cat}
           </button>
         ))}
       </div>
