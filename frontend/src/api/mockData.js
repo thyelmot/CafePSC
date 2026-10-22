@@ -86,12 +86,15 @@ export function getMockProducts() {
   if (saved) {
     try {
       const parsed = JSON.parse(saved);
-      // Ensure products use updated single size if only M is active
-      const updated = parsed.map(p => ({
+      // Tự động bổ sung bất kỳ món mới nào có trong INITIAL_MOCK_PRODUCTS (như Dây thẻ)
+      const existingIds = new Set(parsed.map(p => p.id));
+      const missingProducts = INITIAL_MOCK_PRODUCTS.filter(p => !existingIds.has(p.id));
+      
+      const updated = [...parsed, ...missingProducts].map(p => ({
         ...p,
-        sizes: (p.sizes && p.sizes.length > 0 && !p.sizes.some(s => (s.value || s.name) === 'L')) 
-          ? p.sizes 
-          : DEFAULT_SIZES
+        sizes: (p.category === 'merch' || p.category === 'accessories') 
+          ? [] 
+          : ((p.sizes && p.sizes.length > 0 && !p.sizes.some(s => (s.value || s.name) === 'L')) ? p.sizes : DEFAULT_SIZES)
       }));
       localStorage.setItem('cafepsc_mock_products', JSON.stringify(updated));
       return updated;
@@ -112,7 +115,15 @@ export function getMockOrders() {
   const saved = localStorage.getItem('cafepsc_mock_orders');
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      // Tự động dọn dẹp các đơn ảo cũ bị gán tên "Món nước"
+      const cleaned = parsed.filter(o => 
+        !o.order_items?.some(item => item.product?.name === 'Món nước')
+      );
+      if (cleaned.length !== parsed.length) {
+        localStorage.setItem('cafepsc_mock_orders', JSON.stringify(cleaned));
+      }
+      return cleaned;
     } catch (e) {}
   }
   localStorage.setItem('cafepsc_mock_orders', JSON.stringify(INITIAL_MOCK_ORDERS));
