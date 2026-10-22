@@ -253,8 +253,13 @@ export default function CustomerPage() {
         setOrders(prev => prev.map(o => 
           o.id === order.id ? order : o
         ));
+        const isMerchOrder = order.order_items && order.order_items.length > 0 && order.order_items.every(item => {
+          const cat = item.product?.category;
+          const name = (item.product?.name || '').toLowerCase();
+          return cat === 'merch' || cat === 'accessories' || name.includes('dây thẻ');
+        });
         const statusMessages = {
-          making: '🔥 Đơn hàng đang được pha chế!',
+          making: isMerchOrder ? '📦 Đơn hàng đang được chuẩn bị!' : '🔥 Đơn hàng đang được pha chế!',
           done: '✅ Đơn hàng đã xong! Mời bạn lấy đồ.',
         };
         if (statusMessages[order.status]) {

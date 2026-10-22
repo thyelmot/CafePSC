@@ -1,11 +1,35 @@
-import { Clock, Coffee, CheckCircle2, User, MessageSquare, ArrowRight, XCircle, Phone, MapPin, DollarSign, Trash2 } from 'lucide-react';
+import { Clock, Coffee, CheckCircle2, User, MessageSquare, ArrowRight, XCircle, Phone, MapPin, DollarSign, Trash2, Package } from 'lucide-react';
 import styles from './OrderCard.module.css';
 import { calculateUnitPrice } from '../utils/productUtils';
 
 export default function OrderCard({ order, onStatusUpdate, onDelete, style }) {
   const { id, customer_name, phone, delivery_address, status, note, order_items, created_at } = order;
 
+  // Kiểm tra đơn hàng chỉ gồm dây thẻ / merchandise (không có đồ uống cần pha)
+  const isMerchItem = (item) => {
+    const cat = item?.product?.category;
+    const name = (item?.product?.name || '').toLowerCase();
+    return cat === 'merch' || cat === 'accessories' || name.includes('dây thẻ');
+  };
+
+  const hasOnlyMerch = order_items && order_items.length > 0 && order_items.every(isMerchItem);
+
   const getStatusInfo = (status) => {
+    if (hasOnlyMerch) {
+      switch (status) {
+        case 'pending':
+          return { icon: Clock, label: 'Chờ xử lý', color: 'pending', nextStatus: 'making', nextLabel: 'Chuẩn bị hàng' };
+        case 'making':
+          return { icon: Package, label: 'Đang chuẩn bị', color: 'making', nextStatus: 'done', nextLabel: 'Hoàn thành' };
+        case 'done':
+          return { icon: CheckCircle2, label: 'Hoàn thành', color: 'done', nextStatus: null, nextLabel: null };
+        case 'cancelled':
+          return { icon: XCircle, label: 'Đã hủy', color: 'cancelled', nextStatus: null, nextLabel: null };
+        default:
+          return { icon: Clock, label: status, color: 'pending', nextStatus: null, nextLabel: null };
+      }
+    }
+
     switch (status) {
       case 'pending':
         return { icon: Clock, label: 'Chờ xử lý', color: 'pending', nextStatus: 'making', nextLabel: 'Bắt đầu pha' };

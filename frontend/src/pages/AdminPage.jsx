@@ -506,10 +506,17 @@ export default function AdminPage() {
                 const productName = item.product?.name || 'Unknown';
                 const unitPrice = calculateUnitPrice(item.product, item.options_json || {});
                 if (!productSales[productName]) {
-                  productSales[productName] = { quantity: 0, revenue: 0 };
+                  productSales[productName] = { 
+                    quantity: 0, 
+                    revenue: 0, 
+                    category: item.product?.category || '' 
+                  };
                 }
                 productSales[productName].quantity += item.quantity;
                 productSales[productName].revenue += unitPrice * item.quantity;
+                if (item.product?.category) {
+                  productSales[productName].category = item.product.category;
+                }
               });
             });
 
@@ -705,7 +712,9 @@ export default function AdminPage() {
                             </div>
                           </div>
                           <div className={styles.productNumbers}>
-                            <span className={styles.productQty}>{data.quantity} ly</span>
+                            <span className={styles.productQty}>
+                              {data.quantity} {(data.category === 'merch' || data.category === 'accessories' || name.toLowerCase().includes('dây thẻ')) ? 'dây' : 'ly'}
+                            </span>
                             <span className={styles.productRevenue}>
                               {data.revenue.toLocaleString('vi-VN')}đ
                             </span>

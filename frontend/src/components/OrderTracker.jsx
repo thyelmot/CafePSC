@@ -1,11 +1,17 @@
 import { useState } from 'react';
-import { Clock, Coffee, CheckCircle2, ChevronDown, ChevronUp, X, XCircle } from 'lucide-react';
+import { Clock, Coffee, CheckCircle2, ChevronDown, ChevronUp, X, XCircle, Package } from 'lucide-react';
 import styles from './OrderTracker.module.css';
 
 export default function OrderTracker({ orders, onCancelOrder }) {
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  const getStatusInfo = (status) => {
+  const getStatusInfo = (status, order) => {
+    const isMerchOnly = order?.order_items && order.order_items.length > 0 && order.order_items.every(item => {
+      const cat = item.product?.category;
+      const name = (item.product?.name || '').toLowerCase();
+      return cat === 'merch' || cat === 'accessories' || name.includes('dây thẻ');
+    });
+
     switch (status) {
       case 'pending':
         return {
@@ -15,8 +21,8 @@ export default function OrderTracker({ orders, onCancelOrder }) {
         };
       case 'making':
         return {
-          icon: Coffee,
-          label: 'Đang pha',
+          icon: isMerchOnly ? Package : Coffee,
+          label: isMerchOnly ? 'Đang chuẩn bị' : 'Đang pha',
           color: 'making',
         };
       case 'done':
@@ -66,7 +72,7 @@ export default function OrderTracker({ orders, onCancelOrder }) {
       </div>
       <div className={styles.ordersList}>
         {orders.map((order) => {
-          const statusInfo = getStatusInfo(order.status);
+          const statusInfo = getStatusInfo(order.status, order);
           const StatusIcon = statusInfo.icon;
           const queuePos = getQueuePosition(order.id);
           const isExpanded = expandedOrderId === order.id;

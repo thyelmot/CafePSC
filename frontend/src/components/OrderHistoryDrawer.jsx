@@ -1,4 +1,4 @@
-import { Clock, Coffee, CheckCircle2, XCircle, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, Coffee, CheckCircle2, XCircle, X, ChevronDown, ChevronUp, Package } from 'lucide-react';
 import { useState } from 'react';
 import styles from './OrderHistoryDrawer.module.css';
 import { calculateUnitPrice } from '../utils/productUtils';
@@ -6,12 +6,18 @@ import { calculateUnitPrice } from '../utils/productUtils';
 export default function OrderHistoryDrawer({ isOpen, onClose, orders, onCancelOrder }) {
   const [expandedOrderId, setExpandedOrderId] = useState(null);
 
-  const getStatusInfo = (status) => {
+  const getStatusInfo = (status, order) => {
+    const isMerchOnly = order?.order_items && order.order_items.length > 0 && order.order_items.every(item => {
+      const cat = item.product?.category;
+      const name = (item.product?.name || '').toLowerCase();
+      return cat === 'merch' || cat === 'accessories' || name.includes('dây thẻ');
+    });
+
     switch (status) {
       case 'pending':
         return { icon: Clock, label: 'Đang chờ', color: 'pending' };
       case 'making':
-        return { icon: Coffee, label: 'Đang pha', color: 'making' };
+        return { icon: isMerchOnly ? Package : Coffee, label: isMerchOnly ? 'Đang chuẩn bị' : 'Đang pha', color: 'making' };
       case 'done':
         return { icon: CheckCircle2, label: 'Hoàn thành', color: 'done' };
       case 'cancelled':
@@ -78,7 +84,7 @@ export default function OrderHistoryDrawer({ isOpen, onClose, orders, onCancelOr
             </div>
           ) : (
             orders.map((order) => {
-              const statusInfo = getStatusInfo(order.status);
+              const statusInfo = getStatusInfo(order.status, order);
               const StatusIcon = statusInfo.icon;
               const isExpanded = expandedOrderId === order.id;
 

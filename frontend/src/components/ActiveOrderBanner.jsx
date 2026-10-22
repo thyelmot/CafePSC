@@ -1,4 +1,4 @@
-import { Clock, Coffee, CheckCircle2 } from 'lucide-react';
+import { Clock, Coffee, CheckCircle2, Package } from 'lucide-react';
 import styles from './ActiveOrderBanner.module.css';
 
 export default function ActiveOrderBanner({ orders, allOrders }) {
@@ -21,6 +21,14 @@ export default function ActiveOrderBanner({ orders, allOrders }) {
     return pendingOrders.findIndex(o => o.id === orderId) + 1;
   };
 
+  // Show the most recent active order
+  const latestOrder = activeOrders[0];
+  const isMerchOnly = latestOrder?.order_items && latestOrder.order_items.length > 0 && latestOrder.order_items.every(item => {
+    const cat = item.product?.category;
+    const name = (item.product?.name || '').toLowerCase();
+    return cat === 'merch' || cat === 'accessories' || name.includes('dây thẻ');
+  });
+
   const getStatusInfo = (status) => {
     switch (status) {
       case 'pending':
@@ -32,10 +40,10 @@ export default function ActiveOrderBanner({ orders, allOrders }) {
         };
       case 'making':
         return {
-          icon: Coffee,
-          label: 'Đang pha chế',
+          icon: isMerchOnly ? Package : Coffee,
+          label: isMerchOnly ? 'Đang chuẩn bị' : 'Đang pha chế',
           color: 'making',
-          message: 'Đơn hàng đang được pha chế'
+          message: isMerchOnly ? 'Đơn hàng đang được chuẩn bị' : 'Đơn hàng đang được pha chế'
         };
       default:
         return {
@@ -46,9 +54,6 @@ export default function ActiveOrderBanner({ orders, allOrders }) {
         };
     }
   };
-
-  // Show the most recent active order
-  const latestOrder = activeOrders[0];
   const statusInfo = getStatusInfo(latestOrder.status);
   const StatusIcon = statusInfo.icon;
   const queuePos = getQueuePosition(latestOrder.id);
