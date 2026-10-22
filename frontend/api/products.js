@@ -1,7 +1,4 @@
-import { getSupabaseClient } from '../lib/supabase.js';
-
-const supabase = getSupabaseClient();
-
+import { getSupabaseClient, getAdminSupabaseClient } from '../lib/supabase.js';
 import { rateLimit } from '../lib/rateLimit.js';
 
 export default async function handler(req, res) {
@@ -32,12 +29,38 @@ export default async function handler(req, res) {
     }
 
     try {
+      const supabase = getSupabaseClient();
       const { data, error } = await supabase
         .from('products')
         .select('*')
         .order('id');
 
       if (error) throw error;
+
+      // Tự động kiểm tra và khởi tạo món Dây thẻ nếu chưa có trong DB Supabase
+      const hasMerch = (data || []).some(p => p.name === 'Dây thẻ');
+      if (!hasMerch) {
+        try {
+          const adminSupabase = getAdminSupabaseClient();
+          const { data: newMerch, error: merchErr } = await adminSupabase
+            .from('products')
+            .insert([{
+              name: 'Dây thẻ',
+              price: 30000,
+              category: 'merch',
+              is_available: true,
+              sizes: []
+            }])
+            .select();
+          
+          if (!merchErr && newMerch && newMerch.length > 0) {
+            data.push(...newMerch);
+          }
+        } catch (e) {
+          console.warn('Auto-seed merch warning:', e.message);
+        }
+      }
+
       return res.status(200).json(data);
     } catch (error) {
       return res.status(500).json({ error: error.message });
@@ -46,5 +69,3 @@ export default async function handler(req, res) {
 
   return res.status(405).json({ error: 'Method not allowed' });
 }
-
-
